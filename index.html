@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Восстановите зубы по СПЕЦПРОГРАММЕ г.Барнаула</title>
+  <meta name="description" content="Восстановите зубы по спецпрограмме города Барнаула. Протезирование от 3500 руб/мес, имплантация от 5000 руб/мес.">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a class="header__brand" href="https://polardent36.ru/" target="_blank" rel="noopener noreferrer" aria-label="Дельта — центр стоматологии">
+        <span class="header__brand-mark-wrap">
+          <img class="header__brand-mark" src="assets/images/logo-delta.png" alt="Дельта — центр стоматологии" width="118" height="75">
+        </span>
+      </a>
+      <div class="header__center">
+        <img class="header__icon header__icon--clock" src="assets/images/icon-clock.png" alt="" width="30" height="30">
+        <span class="header__address">г. Воронеж, ул. Студенческая, 12а</span>
+      </div>
+      <div class="header__right">
+        <span class="header__hours">Работаем ежедневно с 09:00 до 21:00</span>
+        <a href="tel:+74732030243" class="header__phone" aria-label="Позвонить: +7 (473) 203-02-43">
+          <span class="header__phone-text">+7 (473) 203-02-43</span>
+          <img class="header__phone-btn" src="assets/images/header-phone.png" alt="" width="138" height="25">
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__container">
+        <div class="hero__content">
+          <h1 class="hero__title">
+            <span class="hero__title-line hero__title-line--black">Восстановите зубы</span>
+            <span class="hero__title-line hero__title-line--cyan">по спецпрограмме в Барнауле!</span>
+          </h1>
+
+          <div class="hero__grid">
+          <div class="hero__text">
+            <p class="hero__lead">В рамках <strong>спецпрограммы</strong> каждый житель<br>Барнаула может получить <strong>БЕСПЛАТНО</strong>:</p>
+            <ul class="hero__list">
+              <li><strong>— </strong>КТ-диагностика с расшифровкой снимков;</li>
+              <li><strong>— </strong>Обследование новейшим 3Д-сканером;</li>
+              <li><strong>— </strong>Консультация стоматолога;</li>
+            </ul>
+            <p class="hero__lead">А также льготные условия до конца месяца:</p>
+            <p class="hero__prices">протезирование: <strong>от 3500 руб/мес</strong>;<br>имплантация: <strong>от 5000 руб/мес</strong>;</p>
+            <p class="hero__urgent"><strong>Спешите! Осталось всего 15 льготных мест!</strong></p>
+          </div>
+
+          <div class="hero__gallery">
+            <img src="assets/images/hero-photo.png" alt="Результаты протезирования до и после" width="347" height="434">
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz" id="quiz">
+      <div class="container quiz__container">
+        <h2 class="quiz__heading">Ответьте на 2 простых вопроса и зафиксируйте за собой место по льготной программе!</h2>
+
+        <div class="quiz__panel" id="quiz-form">
+          <div class="quiz__tabs" role="tablist" aria-label="Шаги квиза">
+            <button type="button" class="quiz__tab is-active" data-quiz-tab="0" role="tab" aria-selected="true">Вопрос 1</button>
+            <button type="button" class="quiz__tab" data-quiz-tab="1" role="tab" aria-selected="false">Вопрос 2</button>
+            <button type="button" class="quiz__tab quiz__tab--last" data-quiz-tab="2" role="tab" aria-selected="false" hidden>Вопрос 2</button>
+          </div>
+
+          <div class="quiz__body">
+            <div class="quiz__form-wrap">
+              <form data-no-submit>
+                <div class="quiz__step is-active" data-step="0">
+                  <h3 class="quiz__question">Сколько зубов необходимо восстановить?</h3>
+                  <div class="quiz__options">
+                    <label class="quiz__option"><input type="radio" name="teeth" value="Один зуб" required><span>Один зуб</span></label>
+                    <label class="quiz__option"><input type="radio" name="teeth" value="Несколько зубов"><span>Несколько зубов</span></label>
+                    <label class="quiz__option"><input type="radio" name="teeth" value="Всю челюсть"><span>Всю челюсть</span></label>
+                    <label class="quiz__option"><input type="radio" name="teeth" value="Обе челюсти"><span>Обе челюсти</span></label>
+                  </div>
+                </div>
+
+                <div class="quiz__step" data-step="1">
+                  <h3 class="quiz__question">2. Пожалуйста, подтвердите, что вы проживаете в Барнауле:</h3>
+                  <div class="quiz__options">
+                    <label class="quiz__option"><input type="radio" name="city" value="Да, я из Барнаула" required><span>Да, я из Барнаула</span></label>
+                    <label class="quiz__option"><input type="radio" name="city" value="Только для жителей Барнаула!"><span>Только для жителей Барнаула!</span></label>
+                  </div>
+                </div>
+
+                <div class="quiz__step" data-step="2">
+                  <h3 class="quiz__question">Отлично! До результата остался последний шаг</h3>
+                  <p class="quiz__hint">Оставьте ваши контактные данные, чтобы получить расчёт и забронировать цены по акции:</p>
+                  <div class="form__group">
+                    <label class="form__label" for="quiz-name">Введите имя:</label>
+                    <input class="form__input" id="quiz-name" type="text" name="name" placeholder="Ваше имя" required autocomplete="name">
+                  </div>
+                  <div class="form__group">
+                    <label class="form__label" for="quiz-phone">Введите телефон:</label>
+                    <input class="form__input" id="quiz-phone" type="tel" name="phone" placeholder="+7 (000) 000-00-00" required autocomplete="tel">
+                  </div>
+                  <div class="quiz__submit-block">
+                    <div class="quiz__submit-row">
+                      <button type="submit" class="btn btn--quiz quiz__submit" data-quiz-submit hidden>Получить расчет и подарки</button>
+                      <img class="quiz__submit-gift" src="assets/images/gift-box.png" alt="" width="156" height="156" data-quiz-submit-gift hidden>
+                    </div>
+                    <p class="quiz__consent">Нажимая на кнопку, вы соглашаетесь на <a href="https://polardent36.ru/police" class="quiz__consent-link" target="_blank" rel="noopener noreferrer">обработку персональных данных</a></p>
+                  </div>
+                </div>
+
+                <div class="quiz__nav">
+                  <button type="button" class="btn btn--outline quiz__prev" data-quiz-prev hidden>Назад</button>
+                </div>
+              </form>
+
+              <div class="quiz__success" hidden>
+                <p class="quiz__success-title">Спасибо! Мы свяжемся с вами в ближайшее время.</p>
+                <div class="quiz__success-cta">
+                  <p class="quiz__success-label"><strong>РАССЧИТАЙТЕ СТОИМОСТЬ</strong> и получите подарок на выбор</p>
+                  <p class="quiz__success-comfort">— Надёжная фиксация и повышенный комфорт: не выпадают, не натирают, не сдавливают.</p>
+                  <a href="tel:+74732030243" class="btn btn--primary quiz__success-btn">ПОЛУЧИТЬ РАСЧЁТ И ПОДАРКИ</a>
+                </div>
+              </div>
+            </div>
+
+            <aside class="quiz__aside">
+              <div class="quiz__aside-card">
+                <p class="quiz__aside-title">Оставьте ваши контактные<br>данные, чтобы получить расчёт<br>и забронировать цены по акции:</p>
+                <ul class="quiz__gifts">
+                  <li>— Консультация врача;</li>
+                  <li>— КТ-снимок челюсти с расшифровкой;</li>
+                  <li>— Удаление зубов перед протезированием;</li>
+                  <li>— 2Д-визуализация будущей улыбки;</li>
+                  <li>— Скидка 20% на протезирование;</li>
+                </ul>
+                <blockquote class="quiz__quote">«Мы гарантируем высокое качество нашей работы и предлагаем лучшие цены в Барнауле на зубные протезы!»</blockquote>
+                <div class="quiz__doctor">
+                  <div class="quiz__doctor-info">
+                    <img class="quiz__doctor-photo" src="assets/images/quiz-doctor.png" alt="Голубцова Евгения Сергеевна" width="100" height="100">
+                    <p class="quiz__doctor-name">Голубцова Евгения Сергеевна</p>
+                    <p class="quiz__doctor-role">Врач-Хирург-Имплантолог</p>
+                    <p class="quiz__doctor-exp">Стаж: 20 лет</p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <div class="site-footer__inner">
+          <div class="site-footer__col site-footer__col--left">
+            <p class="site-footer__license">Лицензия: <a class="site-footer__link" href="https://polardent36.ru/patient/licens" target="_blank" rel="noopener noreferrer">Л041-01136-36/00324912</a></p>
+            <p class="site-footer__disclaimer">Сайт не является публичной офертой</p>
+            <p class="site-footer__age">18+ Имеются противопоказания, необходимо проконсультироваться с врачом.</p>
+          </div>
+
+          <div class="site-footer__col site-footer__col--center">
+            <img class="site-footer__logo" src="assets/images/logo-delta.png" alt="Дельта — центр стоматологии" width="150" height="95">
+            <p class="site-footer__legal">ООО «ПРЕМИУМ» | ИНН 3662292520 | ОГРН 12136000009611 | КПП 366601001</p>
+          </div>
+
+          <div class="site-footer__col site-footer__col--right">
+            <p class="site-footer__contacts">с 09:00 до 21:00 без выходных<br>г. Воронеж, ул. Студенческая, 12а<br><a class="site-footer__link" href="tel:+74732030243">+7 (473) 203-02-43</a><br><a class="site-footer__link" href="mailto:polardent.36@mail.ru">polardent.36@mail.ru</a></p>
+            <a class="site-footer__policy" href="https://polardent36.ru/police" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <div class="cookie" id="cookie" aria-live="polite">
+    <p class="cookie__text">Мы используем cookie, <a href="https://polardent36.ru/police" target="_blank" rel="noopener noreferrer">подробнее</a></p>
+    <button type="button" class="btn btn--cookie" data-cookie-ok>ОК</button>
+  </div>
+
+  <button type="button" class="scroll-top" id="scroll-top" aria-label="Наверх">↑</button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
