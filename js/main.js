@@ -178,8 +178,6 @@
   const quizRoot = $("#quiz-form");
   if (quizRoot) {
     const form = $("form", quizRoot);
-    const pageLoadedAt = Date.now();
-    let contactStepAt = 0;
     const steps = $$(".quiz__step", quizRoot);
     const tabs = $$("[data-quiz-tab]", quizRoot);
     const btnPrev = $("[data-quiz-prev]", quizRoot);
@@ -216,9 +214,6 @@
       if (btnSubmit) btnSubmit.hidden = step !== total - 1;
       if (submitGift) submitGift.hidden = step !== total - 1;
       if (nav) nav.hidden = step === 0 || step === total - 1;
-      if (step === total - 1 && !contactStepAt) {
-        contactStepAt = Date.now();
-      }
       updateTabs();
     };
 
@@ -305,8 +300,6 @@
         phone: $('input[name="phone"]', form)?.value.trim() || "",
         utm: getUtmString(),
         _hp: $('input[name="_hp"]', form)?.value || "",
-        _loaded: pageLoadedAt,
-        _ts: contactStepAt || Date.now(),
       };
 
       const apiEndpoint =

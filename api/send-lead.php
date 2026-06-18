@@ -95,6 +95,14 @@ function isAllowedOrigin(array $config): bool
         $hosts
     );
 
+    $requestHost = strtolower(trim((string) ($_SERVER['HTTP_HOST'] ?? '')));
+    if ($requestHost !== '') {
+        $requestHost = explode(':', $requestHost)[0];
+        if (in_array($requestHost, $allowed, true)) {
+            return true;
+        }
+    }
+
     foreach (['HTTP_ORIGIN', 'HTTP_REFERER'] as $header) {
         $value = trim((string) ($_SERVER[$header] ?? ''));
         if ($value === '') {
@@ -109,31 +117,6 @@ function isAllowedOrigin(array $config): bool
     return false;
 }
 
-function isValidTiming(array $data, int $minPageMs, int $minFormMs, int $maxAgeMs): bool
-{
-    $now = (int) round(microtime(true) * 1000);
-    $loaded = (int) ($data['_loaded'] ?? 0);
-    $formAt = (int) ($data['_ts'] ?? 0);
-
-    if ($loaded <= 0 || $formAt <= 0) {
-        return false;
-    }
-
-    if ($loaded > $now + 60000 || $formAt > $now + 60000) {
-        return false;
-    }
-
-    if ($now - $loaded < $minPageMs || $now - $loaded > $maxAgeMs) {
-        return false;
-    }
-
-    if ($now - $formAt < $minFormMs) {
-        return false;
-    }
-
-    return true;
-}
-
 function isValidName(string $name): bool
 {
     if (mb_strlen($name) < 2 || mb_strlen($name) > 80) {
@@ -146,11 +129,8 @@ function isValidName(string $name): bool
 function isValidPhone(string $phone): bool
 {
     $digits = preg_replace('/\D+/', '', $phone) ?? '';
-    if (strlen($digits) !== 11 || $digits[0] !== '7') {
-        return false;
-    }
 
-    return (bool) preg_match('/^7[3489]\d{9}$/', $digits);
+    return strlen($digits) === 11 && $digits[0] === '7';
 }
 
 $configPath = __DIR__ . '/config.php';
@@ -171,16 +151,8 @@ if (trim((string) ($data['_hp'] ?? '')) !== '') {
     respondSilentReject();
 }
 
-$minPageMs = (int) ($config['min_page_ms'] ?? 8000);
-$minFormMs = (int) ($config['min_form_ms'] ?? 2000);
-$maxAgeMs = (int) ($config['max_form_age_ms'] ?? 86400000);
-
-if (!isValidTiming($data, $minPageMs, $minFormMs, $maxAgeMs)) {
-    respondSilentReject();
-}
-
 if (!isAllowedOrigin($config)) {
-    respondSilentReject();
+    respond(false, 403, 'Не удалось отправить заявку');
 }
 
 $maxPerHour = (int) ($config['rate_limit_hour'] ?? 5);
