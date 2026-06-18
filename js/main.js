@@ -297,7 +297,7 @@
       return parts.join("; ");
     };
 
-    const sendLeadToAmo = async () => {
+    const sendLead = async () => {
       const endpoint =
         window.APP_CONFIG?.leadEndpoint || "/api/send-lead.php";
 
@@ -344,7 +344,7 @@
       }
 
       try {
-        await sendLeadToAmo();
+        await sendLead();
         showSuccess();
       } catch (error) {
         showFormError(
