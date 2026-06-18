@@ -178,6 +178,17 @@
   const quizRoot = $("#quiz-form");
   if (quizRoot) {
     const form = $("form", quizRoot);
+    if (form && !$('input[name="_hp"]', form)) {
+      const hp = document.createElement("input");
+      hp.type = "text";
+      hp.name = "_hp";
+      hp.setAttribute("aria-hidden", "true");
+      hp.setAttribute("tabindex", "-1");
+      hp.setAttribute("autocomplete", "off");
+      hp.style.cssText =
+        "position:fixed;top:-9999px;left:-9999px;width:0;height:0;opacity:0;pointer-events:none;border:0;padding:0;margin:0";
+      form.appendChild(hp);
+    }
     const steps = $$(".quiz__step", quizRoot);
     const tabs = $$("[data-quiz-tab]", quizRoot);
     const btnPrev = $("[data-quiz-prev]", quizRoot);
@@ -303,41 +314,69 @@
       };
 
       const apiEndpoint =
-        window.APP_CONFIG?.leadEndpoint || "/api/send-lead.php";
+        window.APP_CONFIG?.leadEndpoint || "api/send-lead.php";
+      const albatoUrl = window.APP_CONFIG?.albatoWebhook || "";
 
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const sendJson = (url, body) =>
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(body),
+        });
 
-      let result = null;
       try {
-        result = await response.json();
-      } catch (_) {
-        result = null;
+        const response = await sendJson(apiEndpoint, payload);
+        let result = null;
+
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = null;
+        }
+
+        if (response.ok && result?.ok) {
+          return;
+        }
+
+        if (response.status === 503) {
+          throw new Error(
+            "На сервере нет api/config.php — скопируйте из api/config.example.php"
+          );
+        }
+
+        if (response.status === 429) {
+          throw new Error(
+            result?.error || "Слишком много заявок. Попробуйте позже."
+          );
+        }
+
+        if (response.status === 422 && result?.error) {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          (error.message.includes("config.php") ||
+            error.message.includes("заявок") ||
+            error.message.includes("имя") ||
+            error.message.includes("телефон"))
+        ) {
+          throw error;
+        }
       }
 
-      if (response.status === 503) {
-        throw new Error(
-          "На сервере нет api/config.php — скопируйте из api/config.example.php"
-        );
+      if (!albatoUrl) {
+        throw new Error("Не удалось отправить заявку. Попробуйте ещё раз.");
       }
 
-      if (response.status === 429) {
-        throw new Error(
-          result?.error || "Слишком много заявок. Попробуйте позже."
-        );
-      }
-
-      if (!response.ok || !result?.ok) {
-        throw new Error(
-          result?.error || "Не удалось отправить заявку. Попробуйте ещё раз."
-        );
-      }
+      await sendJson(albatoUrl, {
+        name: payload.name,
+        phone: payload.phone,
+        utm: payload.utm,
+      });
     };
 
     form?.addEventListener("submit", async (e) => {

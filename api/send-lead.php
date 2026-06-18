@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-function respond(bool $ok, int $code = 200, ?string $error = null): never
+function respond($ok, $code = 200, $error = null)
 {
     http_response_code($code);
-    $body = ['ok' => $ok];
+    $body = ['ok' => (bool) $ok];
     if ($error !== null) {
         $body['error'] = $error;
     }
@@ -26,13 +26,30 @@ function respond(bool $ok, int $code = 200, ?string $error = null): never
     exit;
 }
 
-/** Тихий отказ — бот думает, что заявка принята */
-function respondSilentReject(): never
+function respondSilentReject()
 {
     respond(true);
 }
 
-function clientIp(): string
+function textLen($value)
+{
+    if (function_exists('mb_strlen')) {
+        return mb_strlen($value);
+    }
+
+    return strlen($value);
+}
+
+function textCut($value, $max)
+{
+    if (function_exists('mb_substr')) {
+        return mb_substr($value, 0, $max);
+    }
+
+    return substr($value, 0, $max);
+}
+
+function clientIp()
 {
     $headers = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
     foreach ($headers as $header) {
@@ -51,10 +68,10 @@ function clientIp(): string
     return '0.0.0.0';
 }
 
-function checkRateLimit(string $ip, int $maxPerHour, int $maxPerDay): bool
+function checkRateLimit($ip, $maxPerHour, $maxPerDay)
 {
     $dir = __DIR__ . '/data/rate-limit';
-    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
         return true;
     }
 
@@ -67,33 +84,37 @@ function checkRateLimit(string $ip, int $maxPerHour, int $maxPerDay): bool
         if (is_array($decoded)) {
             $entries = array_values(array_filter(
                 $decoded,
-                static fn ($ts) => is_int($ts) && $ts > $now - 86400
+                function ($ts) use ($now) {
+                    return is_int($ts) && $ts > $now - 86400;
+                }
             ));
         }
     }
 
-    $lastHour = array_filter($entries, static fn ($ts) => $ts > $now - 3600);
+    $lastHour = array_filter($entries, function ($ts) use ($now) {
+        return $ts > $now - 3600;
+    });
+
     if (count($lastHour) >= $maxPerHour || count($entries) >= $maxPerDay) {
         return false;
     }
 
     $entries[] = $now;
-    file_put_contents($file, json_encode($entries), LOCK_EX);
+    @file_put_contents($file, json_encode($entries), LOCK_EX);
 
     return true;
 }
 
-function isAllowedOrigin(array $config): bool
+function isAllowedOrigin(array $config)
 {
     $hosts = $config['allowed_hosts'] ?? [];
-    if (!is_array($hosts) || $hosts === []) {
+    if (!is_array($hosts) || count($hosts) === 0) {
         return true;
     }
 
-    $allowed = array_map(
-        static fn ($host) => strtolower(trim((string) $host)),
-        $hosts
-    );
+    $allowed = array_map(function ($host) {
+        return strtolower(trim((string) $host));
+    }, $hosts);
 
     $requestHost = strtolower(trim((string) ($_SERVER['HTTP_HOST'] ?? '')));
     if ($requestHost !== '') {
@@ -117,23 +138,84 @@ function isAllowedOrigin(array $config): bool
     return false;
 }
 
-function isValidName(string $name): bool
+function isValidName($name)
 {
-    if (mb_strlen($name) < 2 || mb_strlen($name) > 80) {
+    if (textLen($name) < 2 || textLen($name) > 80) {
         return false;
     }
 
     return (bool) preg_match("/^[\p{L}\s\-'.]+$/u", $name);
 }
 
-function isValidPhone(string $phone): bool
+function isValidPhone($phone)
 {
     $digits = preg_replace('/\D+/', '', $phone) ?? '';
 
     return strlen($digits) === 11 && $digits[0] === '7';
 }
 
+function sendToAlbato($webhookUrl, array $payload)
+{
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($webhookUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_CONNECTTIMEOUT => 10,
+        ]);
+
+        $response = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            throw new RuntimeException('curl: ' . $error);
+        }
+
+        if ($status < 200 || $status >= 300) {
+            throw new RuntimeException('Albato HTTP ' . $status);
+        }
+
+        return true;
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/json\r\n",
+            'content' => $body,
+            'timeout' => 20,
+            'ignore_errors' => true,
+        ],
+        'ssl' => [
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+        ],
+    ]);
+
+    $response = @file_get_contents($webhookUrl, false, $context);
+    if ($response === false) {
+        throw new RuntimeException('stream request failed');
+    }
+
+    if (isset($http_response_header[0]) && !preg_match('/\s200\s/', $http_response_header[0])) {
+        throw new RuntimeException('Albato bad status');
+    }
+
+    return true;
+}
+
 $configPath = __DIR__ . '/config.php';
+if (!is_file($configPath)) {
+    $configPath = __DIR__ . '/config.example.php';
+}
+
 if (!is_file($configPath)) {
     respond(false, 503, 'Сервер не настроен: создайте api/config.php из api/config.example.php');
 }
@@ -178,8 +260,8 @@ if (!isValidPhone($phone)) {
     respond(false, 422, 'Некорректный телефон');
 }
 
-if (mb_strlen($utm) > 500) {
-    $utm = mb_substr($utm, 0, 500);
+if (textLen($utm) > 500) {
+    $utm = textCut($utm, 500);
 }
 
 try {
@@ -189,33 +271,11 @@ try {
         throw new RuntimeException('Не указан albato_webhook_url');
     }
 
-    $payload = [
+    sendToAlbato($webhookUrl, [
         'name' => $name,
         'phone' => $phone,
         'utm' => $utm,
-    ];
-
-    $ch = curl_init($webhookUrl);
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
-        CURLOPT_TIMEOUT => 20,
     ]);
-
-    $response = curl_exec($ch);
-    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
-
-    if ($response === false) {
-        throw new RuntimeException('Ошибка соединения: ' . $error);
-    }
-
-    if ($status < 200 || $status >= 300) {
-        throw new RuntimeException('Albato HTTP ' . $status);
-    }
 
     respond(true);
 } catch (Throwable $e) {
