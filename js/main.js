@@ -294,45 +294,55 @@
       return parts.join("; ");
     };
 
-    const sendLead = async () => {
-      const endpoint =
-        window.APP_CONFIG?.leadEndpoint ||
-        "https://h.albato.ru/wh/38/1lfdph4/AECrkBkmbrVhEpLQAa7Ijui9Rz76ZRcCHKYvKurb18o/";
-
+    const submitLead = async () => {
       const payload = {
         name: $('input[name="name"]', form)?.value.trim() || "",
         phone: $('input[name="phone"]', form)?.value.trim() || "",
         utm: getUtmString(),
       };
 
-      let response;
-      try {
-        response = await fetch(endpoint, {
+      const apiEndpoint =
+        window.APP_CONFIG?.leadEndpoint || "/api/send-lead.php";
+      const albatoUrl =
+        window.APP_CONFIG?.albatoWebhook ||
+        "https://h.albato.ru/wh/38/1lfdph4/AECrkBkmbrVhEpLQAa7Ijui9Rz76ZRcCHKYvKurb18o/";
+
+      const sendJson = (url) =>
+        fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json, text/plain, */*",
+            Accept: "application/json",
           },
           body: JSON.stringify(payload),
         });
-      } catch (_) {
-        throw new Error(
-          "Нет соединения с сервером. Проверьте интернет и попробуйте снова."
-        );
-      }
 
-      if (response.ok) {
-        return { ok: true };
-      }
-
-      let result = null;
       try {
-        result = await response.json();
-      } catch (_) {
-        result = null;
+        const response = await sendJson(apiEndpoint);
+        let result = null;
+
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = null;
+        }
+
+        if (response.ok && result?.ok) {
+          return;
+        }
+
+        if (response.status === 503) {
+          throw new Error("config_missing");
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "config_missing") {
+          throw new Error(
+            "На сервере нет api/config.php — скопируйте из api/config.example.php"
+          );
+        }
       }
 
-      throw new Error(result?.error || "Не удалось отправить заявку");
+      await sendJson(albatoUrl);
     };
 
     form?.addEventListener("submit", async (e) => {
@@ -346,7 +356,7 @@
       }
 
       try {
-        await sendLead();
+        await submitLead();
         showSuccess();
       } catch (error) {
         showFormError(
