@@ -713,6 +713,20 @@ ul {
   color: var(--purple-dark);
 }
 
+.quiz__form-error {
+  margin: 0;
+  width: 100%;
+  max-width: 520px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #b42318;
+}
+
+.quiz__submit.is-loading {
+  opacity: 0.75;
+  pointer-events: none;
+}
+
 .quiz__success {
   min-width: 0;
 }

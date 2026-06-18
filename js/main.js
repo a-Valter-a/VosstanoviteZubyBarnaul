@@ -258,15 +258,106 @@
       });
     });
 
-    form?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!validateStep()) return;
+    const showSuccess = () => {
       form.hidden = true;
       $(".quiz__nav", quizRoot).hidden = true;
       $(".quiz__tabs", quizRoot).hidden = true;
       const formWrap = $(".quiz__form-wrap", quizRoot);
       if (formWrap) formWrap.classList.add("is-success");
       success.hidden = false;
+    };
+
+    const hideFormError = () => {
+      const errorEl = $("#quiz-form-error", quizRoot);
+      if (errorEl) errorEl.hidden = true;
+    };
+
+    const showFormError = (message) => {
+      const errorEl = $("#quiz-form-error", quizRoot);
+      if (!errorEl) return;
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    };
+
+    const getCheckedValue = (name) =>
+      form?.querySelector(`input[name="${name}"]:checked`)?.value?.trim() || "";
+
+    const getUtmString = () => {
+      const params = new URLSearchParams(window.location.search);
+      const keys = [
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_content",
+        "utm_term",
+      ];
+      const parts = keys
+        .map((key) => (params.get(key) ? `${key}=${params.get(key)}` : ""))
+        .filter(Boolean);
+      return parts.join("; ");
+    };
+
+    const sendLeadToAmo = async () => {
+      const endpoint =
+        window.APP_CONFIG?.leadEndpoint || "/api/send-lead.php";
+
+      const payload = {
+        name: $('input[name="name"]', form)?.value.trim() || "",
+        phone: $('input[name="phone"]', form)?.value.trim() || "",
+        teeth: getCheckedValue("teeth"),
+        city: getCheckedValue("city"),
+        page_url: window.location.href,
+        utm: getUtmString(),
+      };
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let result = null;
+      try {
+        result = await response.json();
+      } catch (_) {
+        result = null;
+      }
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || "Не удалось отправить заявку");
+      }
+
+      return result;
+    };
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideFormError();
+      if (!validateStep()) return;
+
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.classList.add("is-loading");
+      }
+
+      try {
+        await sendLeadToAmo();
+        showSuccess();
+      } catch (error) {
+        showFormError(
+          error instanceof Error
+            ? error.message
+            : "Не удалось отправить заявку. Попробуйте ещё раз."
+        );
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.classList.remove("is-loading");
+        }
+      }
     });
 
     updateQuiz();
