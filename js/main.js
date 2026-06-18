@@ -84,27 +84,93 @@
     });
   }
 
-  /* ——— Phone mask ——— */
-  const formatPhone = (value) => {
-    const digits = value.replace(/\D/g, "").replace(/^8/, "7").slice(0, 11);
+  /* ——— Phone mask: +7 (XXX) XXX-XX-XX ——— */
+  const PHONE_EMPTY = "+7";
+
+  const extractPhoneDigits = (value) => {
+    let digits = value.replace(/\D/g, "");
     if (!digits) return "";
-    const d = digits.startsWith("7") ? digits : "7" + digits;
-    let out = "+7";
-    if (d.length > 1) out += " (" + d.slice(1, 4);
-    if (d.length >= 4) out += ") " + d.slice(4, 7);
-    if (d.length >= 7) out += "-" + d.slice(7, 9);
-    if (d.length >= 9) out += "-" + d.slice(9, 11);
+    if (digits.startsWith("8")) digits = "7" + digits.slice(1);
+    else if (!digits.startsWith("7")) digits = "7" + digits;
+    return digits.slice(0, 11);
+  };
+
+  const formatPhone = (value) => {
+    const digits = extractPhoneDigits(value);
+    if (!digits) return "";
+    if (digits.length === 1) return PHONE_EMPTY;
+
+    let out = "+7 (" + digits.slice(1, 4);
+    if (digits.length < 4) return out;
+
+    out += ") " + digits.slice(4, 7);
+    if (digits.length < 7) return out;
+
+    out += "-" + digits.slice(7, 9);
+    if (digits.length < 9) return out;
+
+    out += "-" + digits.slice(9, 11);
     return out;
   };
 
+  const countDigitsBefore = (value, pos) =>
+    value.slice(0, pos).replace(/\D/g, "").length;
+
+  const cursorAfterDigits = (formatted, digitCount) => {
+    if (!formatted) return 0;
+    if (digitCount <= 0) return formatted.startsWith("+7") ? 2 : 0;
+
+    let seen = 0;
+    for (let i = 0; i < formatted.length; i++) {
+      if (/\d/.test(formatted[i])) {
+        seen += 1;
+        if (seen >= digitCount) return i + 1;
+      }
+    }
+    return formatted.length;
+  };
+
+  const applyPhoneMask = (input) => {
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    const digitsBefore = countDigitsBefore(input.value, start);
+    const formatted = formatPhone(input.value);
+
+    input.value = formatted;
+
+    const nextPos = cursorAfterDigits(formatted, digitsBefore);
+    input.setSelectionRange(nextPos, nextPos);
+  };
+
   $$('input[type="tel"]').forEach((input) => {
-    input.addEventListener("input", () => {
-      const pos = input.selectionStart;
-      input.value = formatPhone(input.value);
-      input.setSelectionRange(pos, pos);
-    });
+    input.addEventListener("input", () => applyPhoneMask(input));
+
     input.addEventListener("focus", () => {
-      if (!input.value) input.value = "+7 ";
+      if (!extractPhoneDigits(input.value)) {
+        input.value = PHONE_EMPTY;
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    });
+
+    input.addEventListener("blur", () => {
+      if (input.value === PHONE_EMPTY) input.value = "";
+    });
+
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData("text");
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? start;
+      const digitsBefore = countDigitsBefore(input.value, start);
+      const pastedDigits = pasted.replace(/\D/g, "").length;
+      const nextValue = input.value.slice(0, start) + pasted + input.value.slice(end);
+
+      input.value = formatPhone(nextValue);
+      const nextPos = cursorAfterDigits(
+        input.value,
+        digitsBefore + pastedDigits
+      );
+      input.setSelectionRange(nextPos, nextPos);
     });
   });
 
