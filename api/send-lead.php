@@ -63,11 +63,7 @@ try {
     $payload = [
         'name' => $name,
         'phone' => $phone,
-        'teeth' => trim((string) ($data['teeth'] ?? '')),
-        'city' => trim((string) ($data['city'] ?? '')),
-        'page_url' => trim((string) ($data['page_url'] ?? '')),
         'utm' => trim((string) ($data['utm'] ?? '')),
-        'source' => trim((string) ($config['source'] ?? 'Лендинг')),
     ];
 
     $ch = curl_init($webhookUrl);

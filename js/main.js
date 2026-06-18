@@ -279,9 +279,6 @@
       errorEl.hidden = false;
     };
 
-    const getCheckedValue = (name) =>
-      form?.querySelector(`input[name="${name}"]:checked`)?.value?.trim() || "";
-
     const getUtmString = () => {
       const params = new URLSearchParams(window.location.search);
       const keys = [
@@ -299,25 +296,34 @@
 
     const sendLead = async () => {
       const endpoint =
-        window.APP_CONFIG?.leadEndpoint || "/api/send-lead.php";
+        window.APP_CONFIG?.leadEndpoint ||
+        "https://h.albato.ru/wh/38/1lfdph4/AECrkBkmbrVhEpLQAa7Ijui9Rz76ZRcCHKYvKurb18o/";
 
       const payload = {
         name: $('input[name="name"]', form)?.value.trim() || "",
         phone: $('input[name="phone"]', form)?.value.trim() || "",
-        teeth: getCheckedValue("teeth"),
-        city: getCheckedValue("city"),
-        page_url: window.location.href,
         utm: getUtmString(),
       };
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      let response;
+      try {
+        response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json, text/plain, */*",
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (_) {
+        throw new Error(
+          "Нет соединения с сервером. Проверьте интернет и попробуйте снова."
+        );
+      }
+
+      if (response.ok) {
+        return { ok: true };
+      }
 
       let result = null;
       try {
@@ -326,11 +332,7 @@
         result = null;
       }
 
-      if (!response.ok || !result?.ok) {
-        throw new Error(result?.error || "Не удалось отправить заявку");
-      }
-
-      return result;
+      throw new Error(result?.error || "Не удалось отправить заявку");
     };
 
     form?.addEventListener("submit", async (e) => {
