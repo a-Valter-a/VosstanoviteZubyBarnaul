@@ -107,6 +107,10 @@
                     <label class="form__label" for="quiz-phone">Введите телефон:</label>
                     <input class="form__input" id="quiz-phone" type="tel" name="phone" placeholder="+7 (000) 000-00-00" required autocomplete="tel">
                   </div>
+                  <div class="form__hp" aria-hidden="true">
+                    <label for="quiz-hp">Не заполняйте это поле</label>
+                    <input id="quiz-hp" type="text" name="_hp" tabindex="-1" autocomplete="off">
+                  </div>
                   <div class="quiz__submit-block">
                     <div class="quiz__submit-row">
                       <button type="submit" class="btn btn--quiz quiz__submit" data-quiz-submit hidden>Получить расчет и подарки</button>
@@ -127,7 +131,6 @@
                 <div class="quiz__success-cta">
                   <p class="quiz__success-label"><strong>РАССЧИТАЙТЕ СТОИМОСТЬ</strong> и получите подарок на выбор</p>
                   <p class="quiz__success-comfort">— Надёжная фиксация и повышенный комфорт: не выпадают, не натирают, не сдавливают.</p>
-                  <a href="tel:+73852270693" class="btn btn--primary quiz__success-btn">ПОЛУЧИТЬ РАСЧЁТ И ПОДАРКИ</a>
                 </div>
               </div>
             </div>
@@ -186,7 +189,7 @@
 
   <button type="button" class="scroll-top" id="scroll-top" aria-label="Наверх">↑</button>
 
-  <script src="js/config.js?v=4"></script>
-  <script src="js/main.js?v=4"></script>
+  <script src="js/config.js?v=5"></script>
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>

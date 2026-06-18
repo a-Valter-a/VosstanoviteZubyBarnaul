@@ -654,6 +654,16 @@ ul {
   margin-bottom: 16px;
 }
 
+.form__hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form__label {
   display: block;
   margin-bottom: 5px;
