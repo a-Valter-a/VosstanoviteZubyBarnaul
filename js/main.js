@@ -195,7 +195,6 @@
     const btnSubmit = $("[data-quiz-submit]", quizRoot);
     const submitGift = $("[data-quiz-submit-gift]", quizRoot);
     const nav = $(".quiz__nav", quizRoot);
-    const success = $(".quiz__success", quizRoot);
     const lastTab = $(".quiz__tab--last", quizRoot);
     const question2Tab = tabs[1];
     let step = 0;
@@ -270,12 +269,9 @@
     });
 
     const showSuccess = () => {
-      form.hidden = true;
-      $(".quiz__nav", quizRoot).hidden = true;
-      $(".quiz__tabs", quizRoot).hidden = true;
-      const formWrap = $(".quiz__form-wrap", quizRoot);
-      if (formWrap) formWrap.classList.add("is-success");
-      success.hidden = false;
+      const thankYouUrl =
+        window.APP_CONFIG?.thankYouUrl || "spasibo.html";
+      window.location.href = thankYouUrl;
     };
 
     const hideFormError = () => {
@@ -407,5 +403,71 @@
     });
 
     updateQuiz();
+  }
+
+  /* ——— Thanks page: slider hints ——— */
+  const initThanksSliders = () => {
+    $$("[data-thanks-slider-track]").forEach((track) => {
+      const root = track.closest(".thanks-slider");
+      const dotsEl = root?.querySelector("[data-thanks-slider-dots]");
+      if (!root || !dotsEl) return;
+
+      const getSlides = () =>
+        [...track.children].filter((el) => getComputedStyle(el).display !== "none");
+
+      const updateState = () => {
+        const slides = getSlides();
+        const dots = [...dotsEl.querySelectorAll(".thanks-slider__dot")];
+        if (!slides.length) return;
+
+        const { scrollLeft, clientWidth, scrollWidth } = track;
+        let active = 0;
+
+        slides.forEach((slide, i) => {
+          if (slide.offsetLeft <= scrollLeft + clientWidth * 0.35) active = i;
+        });
+
+        dots.forEach((dot, i) => {
+          dot.classList.toggle("is-active", i === active);
+          dot.setAttribute("aria-selected", i === active ? "true" : "false");
+        });
+
+        const scrollable = slides.length > 1 && scrollWidth > clientWidth + 1;
+        root.classList.toggle("is-scrollable", scrollable);
+        root.classList.toggle("is-at-end", scrollLeft + clientWidth >= scrollWidth - 8);
+        dotsEl.hidden = !scrollable;
+        dotsEl.setAttribute("aria-hidden", scrollable ? "false" : "true");
+      };
+
+      const renderDots = () => {
+        dotsEl.innerHTML = "";
+        const slides = getSlides();
+
+        slides.forEach((_, i) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = "thanks-slider__dot";
+          dot.setAttribute("role", "tab");
+          dot.setAttribute("aria-label", `Карточка ${i + 1} из ${slides.length}`);
+          dot.addEventListener("click", () => {
+            const slide = getSlides()[i];
+            if (slide) {
+              track.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
+            }
+          });
+          dotsEl.appendChild(dot);
+        });
+
+        updateState();
+      };
+
+      renderDots();
+      track.addEventListener("scroll", updateState, { passive: true });
+      window.addEventListener("resize", renderDots, { passive: true });
+    });
+  };
+
+  if (document.body.classList.contains("page-thanks")) {
+    initThanksSliders();
   }
 })();

@@ -106,19 +106,19 @@ ul {
 .header__brand-mark-wrap {
   flex-shrink: 0;
   display: block;
-  width: 118px;
   height: 75px;
+  width: auto;
+  max-width: min(204px, 46vw);
   line-height: 0;
 }
 
 .header__brand-mark {
   display: block;
-  width: 118px;
   height: 75px;
-  max-width: none;
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
-  object-position: center center;
-  filter: brightness(0) invert(1);
+  object-position: left center;
 }
 
 .header__center {
@@ -845,11 +845,10 @@ ul {
 .site-footer__logo {
   display: block;
   width: auto;
-  max-width: 150px;
-  height: auto;
+  max-width: 204px;
+  height: 75px;
   margin: 0 auto 14px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .site-footer__icons {
@@ -1179,8 +1178,8 @@ ul {
 
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 100px;
     height: 64px;
+    max-width: min(174px, 44vw);
   }
 
   .header__center {
@@ -1271,8 +1270,8 @@ ul {
 @media (max-width: 1040px) and (min-width: 992px) {
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 92px;
     height: 58px;
+    max-width: min(156px, 42vw);
   }
 
   .header__address,
@@ -1345,8 +1344,8 @@ ul {
 
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 104px;
     height: 66px;
+    max-width: min(178px, 48vw);
   }
 
   .header__center {
@@ -1513,8 +1512,8 @@ ul {
 
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 104px;
     height: 66px;
+    max-width: min(178px, 48vw);
   }
 
   .header__center {
@@ -1785,7 +1784,8 @@ ul {
   }
 
   .site-footer__logo {
-    max-width: 130px;
+    max-width: 174px;
+    height: 64px;
   }
 
   .cookie {
@@ -1826,8 +1826,8 @@ ul {
 
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 96px;
     height: 60px;
+    max-width: min(161px, 46vw);
   }
 
   .header__address {
@@ -1894,8 +1894,8 @@ ul {
 @media (max-width: 320px) {
   .header__brand-mark-wrap,
   .header__brand-mark {
-    width: 88px;
     height: 56px;
+    max-width: min(151px, 44vw);
   }
 
   .hero__text {
