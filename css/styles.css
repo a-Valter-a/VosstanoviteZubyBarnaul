@@ -97,8 +97,8 @@ ul {
 .header__brand {
   display: inline-flex;
   align-items: center;
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 auto;
+  min-width: min(204px, 46vw);
   text-decoration: none;
   color: #ffffff;
 }
@@ -106,17 +106,16 @@ ul {
 .header__brand-mark-wrap {
   flex-shrink: 0;
   display: block;
+  width: min(204px, 46vw);
   height: 75px;
-  width: auto;
-  max-width: min(204px, 46vw);
   line-height: 0;
 }
 
 .header__brand-mark {
   display: block;
-  height: 75px;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  max-width: none;
   object-fit: contain;
   object-position: left center;
 }
@@ -844,8 +843,8 @@ ul {
 
 .site-footer__logo {
   display: block;
-  width: auto;
-  max-width: 204px;
+  width: min(204px, 80vw);
+  max-width: none;
   height: 75px;
   margin: 0 auto 14px;
   object-fit: contain;
@@ -1174,12 +1173,18 @@ ul {
 
   .header__brand {
     flex: 0 0 auto;
+    min-width: min(174px, 44vw);
   }
 
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(174px, 44vw);
     height: 64px;
-    max-width: min(174px, 44vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .header__center {
@@ -1268,10 +1273,15 @@ ul {
 
 /* 992–1040 — узкий ноутбук: чуть компактнее хедер и hero */
 @media (max-width: 1040px) and (min-width: 992px) {
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(156px, 42vw);
     height: 58px;
-    max-width: min(156px, 42vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .header__address,
@@ -1342,10 +1352,15 @@ ul {
     order: unset;
   }
 
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(178px, 48vw);
     height: 66px;
-    max-width: min(178px, 48vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .header__center {
@@ -1510,10 +1525,15 @@ ul {
     order: unset;
   }
 
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(178px, 48vw);
     height: 66px;
-    max-width: min(178px, 48vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .header__center {
@@ -1824,10 +1844,15 @@ ul {
     padding: 12px 0 14px;
   }
 
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(161px, 46vw);
     height: 60px;
-    max-width: min(161px, 46vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .header__address {
@@ -1892,10 +1917,15 @@ ul {
 
 /* ≤320 — минимальная ширина */
 @media (max-width: 320px) {
-  .header__brand-mark-wrap,
-  .header__brand-mark {
+  .header__brand-mark-wrap {
+    width: min(151px, 44vw);
     height: 56px;
-    max-width: min(151px, 44vw);
+  }
+
+  .header__brand-mark {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 
   .hero__text {
