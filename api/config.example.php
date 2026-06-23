@@ -7,6 +7,9 @@
 return [
     'albato_webhook_url' => 'https://h.albato.ru/wh/38/1lfdph4/AECrkBkmbrVhEpLQAa7Ijui9Rz76ZRcCHKYvKurb18o/',
 
+    // Город лендинга — уходит в Albato (меняйте при деплое на другой город)
+    'city' => 'Красноярск',
+
     // Домен лендинга. Пустой массив = без ограничения.
     'allowed_hosts' => [
         'stomprotez.pw',

@@ -247,6 +247,10 @@ if (!checkRateLimit(clientIp(), $maxPerHour, $maxPerDay)) {
 $name = trim((string) ($data['name'] ?? ''));
 $phone = trim((string) ($data['phone'] ?? ''));
 $utm = trim((string) ($data['utm'] ?? ''));
+$city = trim((string) ($data['city'] ?? ''));
+if ($city === '') {
+    $city = trim((string) ($config['city'] ?? ''));
+}
 
 if ($name === '' || $phone === '') {
     respond(false, 422, 'Укажите имя и телефон');
@@ -264,6 +268,10 @@ if (textLen($utm) > 500) {
     $utm = textCut($utm, 500);
 }
 
+if (textLen($city) > 100) {
+    $city = textCut($city, 100);
+}
+
 try {
     $webhookUrl = trim((string) ($config['albato_webhook_url'] ?? ''));
 
@@ -274,6 +282,7 @@ try {
     sendToAlbato($webhookUrl, [
         'name' => $name,
         'phone' => $phone,
+        'city' => $city,
         'utm' => $utm,
     ]);
 

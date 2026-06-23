@@ -305,6 +305,7 @@
       const payload = {
         name: $('input[name="name"]', form)?.value.trim() || "",
         phone: $('input[name="phone"]', form)?.value.trim() || "",
+        city: window.APP_CONFIG?.city || "",
         utm: getUtmString(),
         _hp: $('input[name="_hp"]', form)?.value || "",
       };
@@ -371,6 +372,7 @@
       await sendJson(albatoUrl, {
         name: payload.name,
         phone: payload.phone,
+        city: payload.city,
         utm: payload.utm,
       });
     };
